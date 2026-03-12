@@ -1,6 +1,6 @@
 # Indian Trading Skills for Claude
 
-> Turn Claude into your Indian market research analyst. 8 specialized skills covering NSE/BSE equities, F&O derivatives, institutional flows, and market breadth — all built for Indian markets.
+> Turn Claude into your Indian market research analyst. 9 specialized skills covering NSE/BSE equities, F&O derivatives, institutional flows, market breadth, and live news tracking — all built for Indian markets.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
@@ -29,7 +29,7 @@ cd indian-trading-skills
 pip install -e .
 
 # Or install directly
-pip install yfinance pandas scipy pyyaml niftystocks
+pip install yfinance pandas scipy pyyaml niftystocks feedparser
 ```
 
 ### 3. Add skills to Claude
@@ -52,6 +52,8 @@ Just talk to Claude naturally:
 "How healthy is the broad market right now?"
 "Evaluate my backtest — 150 trades, 58% win rate, 1.8 profit factor"
 "What are FII/DII flows telling us this month?"
+"Give me today's market news briefing"
+"Any news about Tata Motors?"
 ```
 
 ## Skills
@@ -187,6 +189,37 @@ Measures internal market health beyond Nifty/Sensex using breadth indicators. Ge
 
 **5-component scoring:** Advance/Decline (25%), Stocks above 200 DMA (25%), New Highs vs Lows (20%), Sector Participation (15%), Index Divergence (15%).
 
+### 9. India News Tracker
+Fetches, categorizes, and scores Indian market news from MoneyControl, Economic Times, LiveMint, BSE/NSE filings, and SEBI circulars. Auto-detects sentiment, affected sectors, and stock mentions.
+
+| | |
+|---|---|
+| **Trigger** | "Market news today", "News about Reliance", "Banking sector update", "Upcoming earnings" |
+| **Output** | Daily briefing, stock-specific digest, sector roundup, earnings calendar, corporate actions |
+| **Data** | RSS feeds + Web search + Groww MCP (stocks in news, volume shockers) |
+
+**7 modes:** Daily Briefing, Stock-Specific News, Sector Roundup, Earnings Tracker, Corporate Actions, Bulk/Block Deals, Regulatory Monitor.
+
+**Standalone CLI usage:**
+```bash
+# Daily briefing from all sources
+python3 skills/india-news-tracker/scripts/news_fetcher.py
+
+# Stock-specific news
+python3 skills/india-news-tracker/scripts/news_fetcher.py --stock RELIANCE
+
+# Sector news
+python3 skills/india-news-tracker/scripts/news_fetcher.py --sector banking
+
+# Last 7 days, high impact only
+python3 skills/india-news-tracker/scripts/news_fetcher.py --days 7 --min-impact 6
+
+# JSON output
+python3 skills/india-news-tracker/scripts/news_fetcher.py --format json --output reports/news.json
+```
+
+**Auto-feeds other skills:** Headlines → Scenario Analyzer, Earnings → Stock Analysis, FII activity → Flow Tracker, Sector signals → Market Breadth.
+
 ## Project Structure
 
 ```
@@ -226,10 +259,15 @@ indian-trading-skills/
     │   ├── SKILL.md
     │   ├── references/{methodology, failed_tests}.md
     │   └── scripts/evaluate_backtest.py
-    └── india-market-breadth/
+    ├── india-market-breadth/
+    │   ├── SKILL.md
+    │   ├── references/breadth_methodology.md
+    │   └── assets/breadth_report_template.md
+    └── india-news-tracker/
         ├── SKILL.md
-        ├── references/breadth_methodology.md
-        └── assets/breadth_report_template.md
+        ├── references/{news_source_guide, sector_mapping, sentiment_patterns}.md
+        ├── scripts/news_fetcher.py
+        └── assets/daily_briefing_template.md
 ```
 
 ## Broker Integration
@@ -269,11 +307,12 @@ Groww MCP is available as a connector in Claude. Connect it from the MCP connect
 
 | Source | Skills | API Key | Cost |
 |--------|--------|---------|------|
-| [yfinance](https://github.com/ranaroussi/yfinance) | VCP Screener, Market Breadth | None | Free |
+| [yfinance](https://github.com/ranaroussi/yfinance) | VCP Screener, Market Breadth, News Tracker | None | Free |
 | [niftystocks](https://github.com/swapniljariwala/niftystocks) | VCP Screener | None | Free |
 | [Groww MCP](https://groww.in) | All skills (market data + fundamentals) | Via Claude | Free |
 | [Zerodha Kite MCP](https://github.com/zerodha/kite-mcp-server) | All skills (market data + trading) | Via Claude | Free |
-| Web Search | Flow Tracker, Scenario Analyzer | Via Claude | Free |
+| [feedparser](https://github.com/kurtmckee/feedparser) | News Tracker (RSS feeds) | None | Free |
+| Web Search | Flow Tracker, Scenario Analyzer, News Tracker | Via Claude | Free |
 
 ### Tool Equivalence (Groww ↔ Zerodha)
 
@@ -308,7 +347,7 @@ Groww MCP is available as a connector in Claude. Connect it from the MCP connect
 
 Contributions welcome! Some ideas:
 
-- **New skills**: CANSLIM screener, earnings calendar, promoter pledge monitor, IPO analyzer
+- **New skills**: CANSLIM screener, promoter pledge monitor, IPO analyzer, F&O ban monitor
 - **Enhancements**: Tests for existing calculators, more sector-specific analysis frameworks
 - **Data sources**: Additional free data integrations (NSE API, BSE API)
 - **Documentation**: Usage examples, video walkthroughs
