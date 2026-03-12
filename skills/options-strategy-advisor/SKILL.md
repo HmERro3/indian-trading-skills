@@ -73,38 +73,54 @@ When the market-wide position limit (MWPL) for a stock's F&O contracts exceeds
 
 ---
 
-## Groww MCP Tool Integration
+## Broker MCP Tool Integration
 
-This skill uses the following Groww MCP tools for live market data and execution
-support. Always prefer live data over assumptions.
+This skill uses broker MCP tools for live market data and execution support. Use whichever broker is connected (Groww or Zerodha Kite). Always prefer live data over assumptions.
 
-### Live Data Retrieval
+### Groww MCP Tools (if connected)
 
-| Tool | Purpose | Usage |
-|------|---------|-------|
-| `get_ltp` (segment=FNO, query_type=fno) | Get live option/futures prices | Fetch current premiums for strategy legs |
-| `get_quotes_and_depth` (segment=FNO, entity_type=fno) | Bid/ask spreads and market depth | Assess liquidity and slippage risk |
-| `fno_mcx_contracts_search_tool` | Search for F&O contracts | Find exact trading symbols, lot sizes, expiry dates |
-| `fetch_historical_candle_data` (segment=FNO) | Historical option price data | Backtest strategies, calculate historical volatility |
-| `fetch_curated_fno` | F&O gainers, losers, most traded | Identify active underlyings for strategy deployment |
+| Tool | Purpose |
+|------|---------|
+| `get_ltp` (segment=FNO, query_type=fno) | Live option/futures prices and OI |
+| `get_quotes_and_depth` (segment=FNO) | Bid/ask spreads and market depth |
+| `fno_mcx_contracts_search_tool` | Search F&O contracts, lot sizes, expiries |
+| `fetch_historical_candle_data` (segment=FNO) | Historical option price data |
+| `fetch_curated_fno` | F&O gainers, losers, most traded |
+| `get_open_interest_analysis` | OI structure, PCR, support/resistance |
+| `get_greeks_for_fno_contract` | Live Greeks for specific contracts |
+| `get_greeks_for_fno_symbol` | Greeks for all contracts of an underlying |
+| `get_atm_straddle_chart` | ATM straddle premium analysis |
+| `get_payoff_chart_steps` | Payoff diagram generation instructions |
+| `calculate_fno_margin` | Margin requirement calculation |
+| `get_available_margin_details` | User's available margin |
+| `resolve_market_time_and_calendar` | Market hours and trading calendar |
 
-### Analysis Tools
+### Zerodha Kite MCP Tools (if connected)
 
-| Tool | Purpose | Usage |
-|------|---------|-------|
-| `get_open_interest_analysis` | OI structure, PCR, support/resistance | Identify key levels, gauge sentiment via put-call ratio |
-| `get_greeks_for_fno_contract` | Live Greeks for specific contracts | Delta, Gamma, Theta, Vega for position sizing and hedging |
-| `get_greeks_for_fno_symbol` | Greeks for all contracts of an underlying | Compare Greeks across strikes for optimal selection |
-| `get_atm_straddle_chart` | ATM straddle premium analysis | Measure implied volatility and premium decay intraday |
-| `get_payoff_chart_steps` | Payoff diagram generation instructions | Build visual payoff charts for multi-leg strategies |
+| Tool | Purpose |
+|------|---------|
+| `get_ltp` | Last traded price for F&O instruments |
+| `get_quotes` | Real-time quotes with bid/ask depth |
+| `get_ohlc` | OHLC data for options/futures contracts |
+| `get_historical_data` | Historical candle data for F&O |
+| `search_instruments` | Search for F&O contracts by name/expiry |
+| `get_margins` | Account margins and available funds |
+| `get_positions` | Current F&O positions |
+| `get_orders` / `get_order_history` | Order status and execution details |
+| `place_order` / `modify_order` / `cancel_order` | Order management |
+| `place_gtt_order` / `get_gtts` | GTT order management |
 
-### Margin and Execution
+### Tool Equivalence Map
 
-| Tool | Purpose | Usage |
-|------|---------|-------|
-| `calculate_fno_margin` | Margin requirement calculation | Verify capital adequacy before recommending a strategy |
-| `get_available_margin_details` | User's available margin | Check if user has sufficient funds |
-| `resolve_market_time_and_calendar` | Market hours and trading calendar | Verify market status, days to expiry, holiday schedule |
+| Action | Groww MCP | Zerodha Kite MCP |
+|--------|-----------|------------------|
+| Live price | `get_ltp` | `get_ltp` |
+| Market depth | `get_quotes_and_depth` | `get_quotes` |
+| Historical data | `fetch_historical_candle_data` | `get_historical_data` |
+| Search contracts | `fno_mcx_contracts_search_tool` | `search_instruments` |
+| Margin check | `calculate_fno_margin` / `get_available_margin_details` | `get_margins` |
+| Positions | `get_my_trading_positions_today` | `get_positions` |
+| Place orders | `place_fno_order` | `place_order` |
 
 ---
 
@@ -406,8 +422,8 @@ Use this decision tree to recommend strategies based on user's market view:
 
 ## Error Handling
 
-- If Groww MCP tools return errors, inform the user and suggest checking market
-  hours or contract availability.
+- If broker MCP tools (Groww or Zerodha) return errors, inform the user and suggest checking market
+  hours or contract availability. Try the alternative broker's equivalent tool if available.
 - If a contract search yields no results, try alternative search terms or check
   if the expiry has passed.
 - If margin data is unavailable, provide theoretical estimates with a disclaimer.

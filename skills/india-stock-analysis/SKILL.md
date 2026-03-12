@@ -5,23 +5,39 @@ description: Use when user requests analysis of Indian stocks, fundamental asses
 
 # India Stock Analysis Skill
 
-Analyze Indian stocks listed on NSE and BSE using Groww MCP tools and web search. All analysis is denominated in INR and follows Indian fiscal year conventions (April-March). No API keys are required.
+Analyze Indian stocks listed on NSE and BSE using broker MCP tools and web search. All analysis is denominated in INR and follows Indian fiscal year conventions (April-March). No API keys are required.
 
 ## Data Sources
 
-- **Primary**: Groww MCP tools (connected and available)
-  - `fetch_stocks_fundamental_data` -- Financials, ratios, shareholding, mutual fund holdings
-  - `fetch_historical_candle_data` -- OHLCV price history
-  - `get_historical_technical_indicators` -- RSI, MACD, Bollinger, SMA, EMA, SuperTrend, VWAP, ADX, and more
-  - `get_ltp` -- Live/last traded price and open interest
-  - `get_quotes_and_depth` -- Real-time bid/ask and market depth
-  - `curate_symbols` -- Resolve stock symbols and exchange
-  - `fetch_market_movers_and_trending_stocks_funds` -- Market movers, gainers, losers
-  - `fetch_fundamentals_screener` -- Screen stocks by fundamental criteria
-  - `fetch_technical_screener` -- Screen stocks by technical signals
-  - `search_stock_and_others_symbol` -- Search for stocks, indices, and companies
-  - `resolve_market_time_and_calendar` -- Current market time, trading days, holidays
-- **Supplementary**: Web search for news, analyst reports, sector developments, and regulatory updates
+Use whichever broker MCP is connected. Both provide equivalent data for stock analysis.
+
+### Option A: Groww MCP (if connected)
+- `fetch_stocks_fundamental_data` -- Financials, ratios, shareholding, mutual fund holdings
+- `fetch_historical_candle_data` -- OHLCV price history
+- `get_historical_technical_indicators` -- RSI, MACD, Bollinger, SMA, EMA, SuperTrend, VWAP, ADX, and more
+- `get_ltp` -- Live/last traded price and open interest
+- `get_quotes_and_depth` -- Real-time bid/ask and market depth
+- `curate_symbols` -- Resolve stock symbols and exchange
+- `fetch_market_movers_and_trending_stocks_funds` -- Market movers, gainers, losers
+- `fetch_fundamentals_screener` -- Screen stocks by fundamental criteria
+- `fetch_technical_screener` -- Screen stocks by technical signals
+- `search_stock_and_others_symbol` -- Search for stocks, indices, and companies
+- `resolve_market_time_and_calendar` -- Current market time, trading days, holidays
+
+### Option B: Zerodha Kite MCP (if connected)
+- `get_ltp` -- Last traded price for instruments
+- `get_quotes` -- Real-time market quotes with depth
+- `get_ohlc` -- OHLC data for instruments
+- `get_historical_data` -- Historical OHLCV candle data
+- `search_instruments` -- Search and resolve trading instruments
+- `get_holdings` -- User's portfolio holdings
+- `get_positions` -- Current trading positions
+- `get_margins` -- Account margin details
+- `get_profile` -- User profile information
+
+### Supplementary
+- Web search for news, analyst reports, sector developments, and regulatory updates
+- yfinance (free, no API key) as fallback for historical data
 
 ## Workflow
 
@@ -330,7 +346,7 @@ Throughout all analysis types, apply these India-specific guidelines:
 
 ## Error Handling
 
-- If a Groww MCP tool call fails, note the missing data point and proceed with available data. Use web search as a fallback for critical data.
+- If a broker MCP tool call fails (Groww or Zerodha), note the missing data point and proceed with available data. Try the alternative broker's equivalent tool if available. Use web search as a fallback for critical data.
 - If the stock symbol cannot be resolved, ask the user to clarify the company name or provide the NSE/BSE symbol directly.
 - If the company is not listed on Indian exchanges, inform the user that this skill is designed for NSE/BSE listed companies.
 - If historical data is limited (e.g., recently listed IPO), adjust the analysis timeframes accordingly and note the limitation.

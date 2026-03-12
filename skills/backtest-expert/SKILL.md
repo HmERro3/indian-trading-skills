@@ -220,10 +220,11 @@ python3 evaluate_backtest.py \
 
 ---
 
-## Using Groww MCP Tools for Backtesting Support
+## Using Broker MCP Tools for Backtesting Support
 
-While the MCP tools are not backtesting engines, they support the process:
+While the MCP tools are not backtesting engines, they support the process. Use whichever broker is connected:
 
+### Groww MCP (if connected)
 - **`fetch_historical_candle_data`**: Fetch OHLCV data for strategy development and spot-checking
 - **`get_historical_technical_indicators`**: Calculate indicators (SMA, EMA, RSI, MACD, Bollinger, SuperTrend, etc.) on historical data
 - **`get_historical_candlestick_patterns`**: Identify candle patterns in historical data
@@ -232,6 +233,12 @@ While the MCP tools are not backtesting engines, they support the process:
 - **`fetch_technical_screener`**: Technical screening for strategy ideas
 - **`get_ltp`**: Current price for live validation
 - **`fetch_market_movers_and_trending_stocks_funds`**: Discover momentum and volume patterns
+
+### Zerodha Kite MCP (if connected)
+- **`get_historical_data`**: Fetch OHLCV candle data for strategy development
+- **`get_ltp`** / **`get_quotes`**: Current prices for live validation
+- **`search_instruments`**: Find instruments for universe construction
+- **`get_holdings`** / **`get_positions`**: Verify live portfolio against strategy signals
 
 ---
 

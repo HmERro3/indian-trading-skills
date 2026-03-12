@@ -105,7 +105,7 @@ Classify the headline into one of these categories:
 
    For each stock, provide:
    - Ticker (NSE symbol)
-   - Current price (use Groww MCP `get_ltp` if available)
+   - Current price (use broker MCP `get_ltp` — Groww or Zerodha Kite — if available)
    - Impact channel (why this stock is affected)
    - Magnitude estimate (High/Medium/Low)
 

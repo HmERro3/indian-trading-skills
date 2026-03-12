@@ -241,13 +241,19 @@ Present the report in a clear, structured format with:
 
 ## Tools Used
 
+Use whichever broker MCP is connected (Groww or Zerodha Kite):
+
+| Action | Groww MCP | Zerodha Kite MCP | Fallback |
+|--------|-----------|------------------|----------|
+| Nifty LTP | `get_ltp` | `get_ltp` | yfinance |
+| Historical data | `fetch_historical_candle_data` | `get_historical_data` | yfinance |
+| Trading calendar | `resolve_market_time_and_calendar` | — | Web search |
+| Market movers | `fetch_market_movers_and_trending_stocks_funds` | — | Web search |
+| Shareholding data | `fetch_stocks_fundamental_data` | — | Web search |
+| Portfolio check | `get_equity_portfolio_holdings` | `get_holdings` | — |
+
 | Tool | Purpose |
 |------|---------|
 | `WebSearch` | Fetch latest FII/DII data from NSDL, NSE, MoneyControl |
 | `WebFetch` | Scrape specific FII/DII data pages for structured data |
-| `get_ltp` | Get current Nifty 50 price for correlation |
-| `fetch_historical_candle_data` | Get historical Nifty data for trend correlation |
-| `resolve_market_time_and_calendar` | Determine trading days and market status |
 | `calculator` | Compute flow ratios, correlations, and aggregates |
-| `fetch_market_movers_and_trending_stocks_funds` | Identify stocks impacted by institutional flows |
-| `fetch_stocks_fundamental_data` | Check institutional shareholding in specific stocks |

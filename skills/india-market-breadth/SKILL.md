@@ -31,14 +31,24 @@ This skill provides a systematic framework to assess NSE/BSE breadth health, sco
 | Nifty 50 level | Groww MCP | `get_ltp` for NIFTY |
 | Top gainers/losers | Groww MCP | `fetch_market_movers_and_trending_stocks_funds` with `TOP_GAINERS` / `TOP_LOSERS` |
 
-### Groww MCP Tools Used
+### Broker MCP Tools Used
 
+Use whichever broker MCP is connected (Groww or Zerodha Kite):
+
+**Groww MCP (if connected):**
 1. **`fetch_market_movers_and_trending_stocks_funds`** — Core tool for yearly highs/lows counts, top gainers/losers, volume data
 2. **`get_ltp`** — Get live prices for Nifty, Bank Nifty, sector indices
 3. **`fetch_historical_candle_data`** — Historical data for trend analysis
 4. **`get_historical_technical_indicators`** — Calculate moving averages for breadth assessment
 5. **`fetch_technical_screener`** — Screen for stocks by technical criteria (RSI, MACD, etc.)
 6. **`fetch_fundamentals_screener`** — Natural language screening for market-cap based analysis
+
+**Zerodha Kite MCP (if connected):**
+1. **`get_ltp`** — Live prices for Nifty, Bank Nifty, sector indices
+2. **`get_quotes`** — Real-time quotes with market depth
+3. **`get_ohlc`** — OHLC data for indices and stocks
+4. **`get_historical_data`** — Historical candle data for trend analysis
+5. **`search_instruments`** — Search for instruments by name
 
 ---
 

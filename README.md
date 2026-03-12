@@ -10,7 +10,7 @@
 
 A collection of [Claude Skills](https://docs.anthropic.com/en/docs/claude-code/skills) that give Claude deep knowledge of Indian equity markets. Each skill is a self-contained module with methodology references, scoring frameworks, and Python scripts — purpose-built for NSE/BSE.
 
-**No API keys required** for most skills. Uses free data sources (yfinance, niftystocks) and optionally integrates with [Groww MCP](https://groww.in) for live market data.
+**No API keys required** for most skills. Uses free data sources (yfinance, niftystocks) and optionally integrates with [Groww MCP](https://groww.in) or [Zerodha Kite MCP](https://github.com/zerodha/kite-mcp-server) for live market data and trading.
 
 Adapted from [tradermonty/claude-trading-skills](https://github.com/tradermonty/claude-trading-skills) (US markets) for Indian markets.
 
@@ -232,14 +232,64 @@ indian-trading-skills/
         └── assets/breadth_report_template.md
 ```
 
-## Data Sources
+## Broker Integration
+
+All skills support **dual broker MCP** — use Groww, Zerodha, or both. Each skill auto-detects which broker is connected and uses the appropriate tools.
+
+### Zerodha Kite MCP Setup
+
+Add to your Claude Desktop config (`~/.config/Claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "kite": {
+      "command": "npx",
+      "args": ["mcp-remote", "https://mcp.kite.trade/mcp"]
+    }
+  }
+}
+```
+
+That's it — no API keys needed. Authentication happens through Zerodha's secure login flow when you first use it.
+
+**Zerodha Kite MCP provides 22 tools:**
+- **Market Data**: `get_ltp`, `get_quotes`, `get_ohlc`, `get_historical_data`, `search_instruments`
+- **Portfolio**: `get_holdings`, `get_positions`, `get_margins`, `get_profile`, `get_mf_holdings`
+- **Orders**: `place_order`, `modify_order`, `cancel_order`, `get_orders`, `get_trades`, `get_order_history`
+- **GTT**: `place_gtt_order`, `modify_gtt_order`, `delete_gtt_order`, `get_gtts`
+
+For more details: [Zerodha Kite MCP GitHub](https://github.com/zerodha/kite-mcp-server) | [Setup Guide](https://zerodha.com/z-connect/featured/connect-your-zerodha-account-to-ai-assistants-with-kite-mcp)
+
+### Groww MCP Setup
+
+Groww MCP is available as a connector in Claude. Connect it from the MCP connectors panel.
+
+### Data Sources
 
 | Source | Skills | API Key | Cost |
 |--------|--------|---------|------|
 | [yfinance](https://github.com/ranaroussi/yfinance) | VCP Screener, Market Breadth | None | Free |
 | [niftystocks](https://github.com/swapniljariwala/niftystocks) | VCP Screener | None | Free |
-| [Groww MCP](https://groww.in) | Stock Analysis, Options, Flows | Via Claude | Free |
+| [Groww MCP](https://groww.in) | All skills (market data + fundamentals) | Via Claude | Free |
+| [Zerodha Kite MCP](https://github.com/zerodha/kite-mcp-server) | All skills (market data + trading) | Via Claude | Free |
 | Web Search | Flow Tracker, Scenario Analyzer | Via Claude | Free |
+
+### Tool Equivalence (Groww ↔ Zerodha)
+
+| Action | Groww MCP | Zerodha Kite MCP |
+|--------|-----------|------------------|
+| Live price | `get_ltp` | `get_ltp` |
+| Market depth | `get_quotes_and_depth` | `get_quotes` |
+| Historical candles | `fetch_historical_candle_data` | `get_historical_data` |
+| Search instruments | `curate_symbols` | `search_instruments` |
+| Margins | `calculate_fno_margin` | `get_margins` |
+| Holdings | `get_equity_portfolio_holdings` | `get_holdings` |
+| Positions | `get_my_trading_positions_today` | `get_positions` |
+| Place F&O order | `place_fno_order` | `place_order` |
+| Fundamentals | `fetch_stocks_fundamental_data` | — (use web search) |
+| OI analysis | `get_open_interest_analysis` | — (use web search) |
+| Greeks | `get_greeks_for_fno_contract` | — (use Black-Scholes script) |
 
 ## Indian Market Context
 
@@ -279,4 +329,4 @@ Past performance of any strategy, indicator, or methodology does not guarantee f
 
 - Upstream: [tradermonty/claude-trading-skills](https://github.com/tradermonty/claude-trading-skills) (US markets)
 - Methodology: Mark Minervini (VCP/Trend Template), William O'Neil (CANSLIM concepts)
-- Data: [Yahoo Finance](https://finance.yahoo.com), [Groww](https://groww.in), [NSE India](https://www.nseindia.com)
+- Data: [Yahoo Finance](https://finance.yahoo.com), [Groww](https://groww.in), [Zerodha](https://zerodha.com), [NSE India](https://www.nseindia.com)
